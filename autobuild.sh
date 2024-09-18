@@ -11,7 +11,8 @@ rm -rf `pwd`/build/*
 
 cd `pwd`/build &&
     cmake .. &&
-    make
+    make &&
+    make install
 
 # 回到项目根目录
 cd ..
