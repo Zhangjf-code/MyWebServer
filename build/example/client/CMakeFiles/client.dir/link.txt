@@ -1,1 +1,0 @@
-/usr/bin/g++-11  -g -std=c++11 -fPIC -g -rdynamic CMakeFiles/client.dir/client.cpp.o -o ../../../example/client/client   -L/home/zhangjf/diskdata/mynote/MyTinyNetworkLibrary/lib 
