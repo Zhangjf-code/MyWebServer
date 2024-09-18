@@ -9,6 +9,7 @@
 #include "noncopyable.h"
 #include "Timestamp.h"
 #include "CurrentThread.h"
+#include "TimerQueue.h"
 
 class Channel;
 class Poller;
@@ -45,6 +46,24 @@ public:
     // 判断EventLoop对象是否在自己的线程里面
     bool isInLoopThread() const { return threadId_ ==  CurrentThread::tid(); }
 
+    /**
+     * 定时任务相关函数
+     */
+    void runAt(Timestamp timestamp, Functor&& cb) {
+        timerQueue_->addTimer(std::move(cb), timestamp, 0.0);
+    }
+
+    void runAfter(double waitTime, Functor&& cb) {
+        Timestamp time(addTime(Timestamp::now(), waitTime)); 
+        runAt(time, std::move(cb));
+    }
+
+    void runEvery(double interval, Functor&& cb) {
+        Timestamp timestamp(addTime(Timestamp::now(), interval)); 
+        timerQueue_->addTimer(std::move(cb), timestamp, interval);
+    }
+
+
     pid_t getthreadId() const { return threadId_; }
 
 private:
@@ -60,6 +79,7 @@ private:
 
     Timestamp pollReturnTime_; // poller返回发生事件的channels的时间点
     std::unique_ptr<Poller> poller_;
+    std::unique_ptr<TimerQueue> timerQueue_; //添加定时器队列
 
     int wakeupFd_; // 主要作用，当mainLoop获取一个新用户的channel，通过轮询算法选择一个subloop，通过该成员唤醒subloop处理channel 
                     //eventfd算法：线程间的通信机制，效率比较高 相对于libevent主loop与子loop间的socketpair机制效率高
