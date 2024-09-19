@@ -57,6 +57,6 @@ add_subdirectory(src/http)
 
 add_subdirectory(example/server)
 
-add_subdirectory(example/server2)
+add_subdirectory(example/server-timequeue)
 
 add_subdirectory(example/client)

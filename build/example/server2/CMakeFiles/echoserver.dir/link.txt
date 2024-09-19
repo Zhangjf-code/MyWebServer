@@ -1,1 +1,0 @@
-/usr/bin/g++-11  -g -std=c++11 -fPIC -g -rdynamic CMakeFiles/echoserver.dir/echoserver.cc.o -o ../../../example/server2/echoserver   -L/home/zhangjf/diskdata/myproject-c++/MyTinyNetworkLibrary/lib  -Wl,-rpath,/home/zhangjf/diskdata/myproject-c++/MyTinyNetworkLibrary/lib ../../../lib/libmytinymuduo.so -lpthread 
