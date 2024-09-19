@@ -14,6 +14,7 @@ class Channel;
 class EventLoop;
 class Socket;
 
+
 /**
  * TcpServer => Acceptor => 有一个新用户连接，通过accept函数拿到connfd
  * =》 TcpConnection 设置回调 =》 Channel =》 Poller =》 Channel的回调操作
@@ -56,6 +57,14 @@ public:
     void setCloseCallback(const CloseCallback& cb)
     { closeCallback_ = cb; }
 
+    void setContext(const WeakEntryPtr& context){ // 保存 Entry 的弱引用 用于时间轮心跳检测
+        context_ = context;
+    }
+
+    WeakEntryPtr& getContext(){ //得到Entry 的弱引用 用于时间轮心跳检测
+        return context_;
+    } 
+
     // 连接建立
     void connectEstablished();
     // 连接销毁
@@ -93,4 +102,9 @@ private:
 
     Buffer inputBuffer_;  // 接收数据的缓冲区
     Buffer outputBuffer_; // 发送数据的缓冲区
+
+    WeakEntryPtr context_;//保存 Entry 的弱引用 用于时间轮心跳检测
 };
+
+
+

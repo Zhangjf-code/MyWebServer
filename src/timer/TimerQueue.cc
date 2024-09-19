@@ -51,6 +51,8 @@ void TimerQueue::addTimer(TimerCallback cb,
                           double interval)
 {
     Timer* timer = new Timer(std::move(cb), when, interval);
+    std::cout<<"timer"<<std::endl;
+    getchar();
     loop_->runInLoop(
         std::bind(&TimerQueue::addTimerInLoop, this, timer));
 }

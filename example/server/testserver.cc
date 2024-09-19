@@ -3,6 +3,7 @@
 
 #include <string>
 #include <functional>
+#include <thread>
 
 class PingPangTest
 {
@@ -24,7 +25,7 @@ public:
         );
 
         // 设置合适的loop线程数量 loopthread
-        server_.setThreadNum(4);
+        server_.setThreadNum(std::thread::hardware_concurrency()-2);
     }
     void start()
     {

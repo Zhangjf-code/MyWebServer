@@ -1,5 +1,4 @@
-#ifndef TIMER_H
-#define TIMER_H
+#pragma once
 
 #include "noncopyable.h"
 #include "Timestamp.h"
@@ -39,5 +38,3 @@ private:
     const double interval_;         // 超时时间间隔，如果是一次性定时器，该值为0
     const bool repeat_;             // 是否重复(false 表示是一次性定时器)
 };
-
-#endif // TIMER_H

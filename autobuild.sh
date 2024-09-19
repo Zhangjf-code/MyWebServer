@@ -14,5 +14,7 @@ cd `pwd`/build &&
     make &&
     make install
 
+# sudo cp `pwd`/lib/libmytinymuduo.so /usr/local/lib
+
 # 回到项目根目录
 cd ..

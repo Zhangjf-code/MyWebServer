@@ -79,6 +79,7 @@ private:
 
     Timestamp pollReturnTime_; // poller返回发生事件的channels的时间点
     std::unique_ptr<Poller> poller_;
+
     std::unique_ptr<TimerQueue> timerQueue_; //添加定时器队列
 
     int wakeupFd_; // 主要作用，当mainLoop获取一个新用户的channel，通过轮询算法选择一个subloop，通过该成员唤醒subloop处理channel 

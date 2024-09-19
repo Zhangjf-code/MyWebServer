@@ -1,0 +1,164 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-34b246870fbba43030ee.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "src/http",
+					"jsonFile" : "directory-src.http-Debug-f3faea2fcb1a80f8f9ff.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src/http",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "example/server",
+					"jsonFile" : "directory-example.server-Debug-cffc530462d7e9026e7e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "example/server",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"build" : "example/server2",
+					"jsonFile" : "directory-example.server2-Debug-4f59c65d4d29280acc45.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "example/server2",
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"build" : "example/client",
+					"jsonFile" : "directory-example.client-Debug-a0765369291377cbba41.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "example/client",
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					],
+					"name" : "mytinymuduo",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "HttpServer::@8197c89eb9db1dcb42c8",
+					"jsonFile" : "target-HttpServer-Debug-d4fff24c1674e3efdbc3.json",
+					"name" : "HttpServer",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "client::@cd3424c3631ca74c7c32",
+					"jsonFile" : "target-client-Debug-d079042582f5ad2e1e4e.json",
+					"name" : "client",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "echoserver::@f21f715dd04cbbd0895b",
+					"jsonFile" : "target-echoserver-Debug-d026afd0f3289a15418f.json",
+					"name" : "echoserver",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "mytinymuduo::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-mytinymuduo-Debug-8e6320f647629481e7ba.json",
+					"name" : "mytinymuduo",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "testserver::@9a75c32a50fbfe4920f2",
+					"jsonFile" : "target-testserver-Debug-41a822c33e352fda9bfd.json",
+					"name" : "testserver",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/zhangjf/diskdata/myproject-c++/MyTinyNetworkLibrary/build",
+		"source" : "/home/zhangjf/diskdata/myproject-c++/MyTinyNetworkLibrary"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

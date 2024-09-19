@@ -1,5 +1,4 @@
-#ifndef TIMER_QUEUE_H
-#define TIMER_QUEUE_H
+#pragma once
 
 #include "Timestamp.h"
 #include "Channel.h"
@@ -54,5 +53,3 @@ private:
 
     bool callingExpiredTimers_; // 标明正在获取超时定时器
 };
-
-#endif // TIMER_QUEUE_H

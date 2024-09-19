@@ -16,6 +16,7 @@ include_directories(${PROJECT_SOURCE_DIR}/src/http)
 include_directories(${PROJECT_SOURCE_DIR}/src/muduo_core)
 include_directories(${PROJECT_SOURCE_DIR}/src/timer)
 include_directories(${PROJECT_SOURCE_DIR}/src/logger)
+include_directories(${PROJECT_SOURCE_DIR}/src/keepalive)
 # include_directories(${PROJECT_SOURCE_DIR}/src/mysql)
 
 # 设置项目库文件搜索路径 -L
@@ -27,6 +28,7 @@ aux_source_directory(${PROJECT_SOURCE_DIR}/src/http/ SRC_HTTP)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/timer/ SRC_TIMER)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/logger/ SRC_LOG)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src/muduo_core/ SRC_MUDUO_CORE)
+aux_source_directory(${PROJECT_SOURCE_DIR}/src/keepalive/ SRC_KEEPALIVE)
 # aux_source_directory(${PROJECT_SOURCE_DIR}/src/mysql SRC_MYSQL)
 
 
@@ -37,7 +39,7 @@ add_library(mytinymuduo SHARED
             ${SRC_LOG}
             ${SRC_HTTP}
             ${SRC_MUDUO_CORE}
-            # ${SRC_MYSQL}
+            ${SRC_MYSQL}
             )
 
 # 目标动态库所需连接的库 libthread libmysqlclient
@@ -54,5 +56,7 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/ DESTINATION lib/include/mytinymuduo
 add_subdirectory(src/http)
 
 add_subdirectory(example/server)
+
+add_subdirectory(example/server2)
 
 add_subdirectory(example/client)
