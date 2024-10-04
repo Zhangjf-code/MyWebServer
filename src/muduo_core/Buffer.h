@@ -3,13 +3,14 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <mutex>
 
 // 网络库底层的缓冲器类型定义
 class Buffer
 {
 public:
     static const size_t kCheapPrepend = 8;
-    static const size_t kInitialSize = 1024;
+    static const size_t kInitialSize = 1024 * 1024;
 
     explicit Buffer(size_t initialSize = kInitialSize)
         : buffer_(kCheapPrepend + initialSize)
@@ -54,6 +55,7 @@ public:
         {
             retrieveAll();
         }
+        
     }
 
     void retrieveAll()
@@ -69,6 +71,7 @@ public:
 
     std::string retrieveAsString(size_t len)
     {
+        if(len > readableBytes()) len = readableBytes();
         std::string result(peek(), len);
         retrieve(len); // 上面一句把缓冲区中可读的数据，已经读取出来，这里肯定要对缓冲区进行复位操作
         return result;
@@ -111,9 +114,11 @@ public:
 
     const char* findCRLF() const
     {
+
         // FIXME: replace with memmem()?
         const char* crlf = std::search(peek(), beginWrite(), kCRLF, kCRLF+2);
         return crlf == beginWrite() ? NULL : crlf;
+
     }
 
 
@@ -121,6 +126,9 @@ public:
     ssize_t readFd(int fd, int* saveErrno);
     // 通过fd发送数据
     ssize_t writeFd(int fd, int* saveErrno);
+
+    int fd() const { return fd_; }
+
 private:
     char* begin()
     {
@@ -149,6 +157,7 @@ private:
         }
     }
 
+    int fd_;
     std::vector<char> buffer_;
     size_t readerIndex_;
     size_t writerIndex_;

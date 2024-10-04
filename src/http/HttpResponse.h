@@ -42,13 +42,21 @@ public:
     void addHeader(const std::string& key, const std::string& value)
     { headers_[key] = value; }  
 
+    void addothermessage(const std::string& key, const std::string& value){
+        othermessage[key] = value;
+    }
+
     void setBody(const std::string& body)
-    { body_ = body; }   
+    { body_ = std::move(body); }
+
+    void setBody(const char* body, size_t len)
+    { body_.assign(body, len); } 
 
     void appendToBuffer(Buffer* output) const;
 
 private:
     std::unordered_map<std::string, std::string> headers_;
+    std::unordered_map<std::string, std::string> othermessage;
     HttpStatusCode statusCode_;
     // FIXME: add http version
     std::string statusMessage_;

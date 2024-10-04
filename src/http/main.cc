@@ -3,14 +3,63 @@
 #include "HttpResponse.h"
 #include "HttpContext.h"
 #include "Timestamp.h"
+#include <fcntl.h>    // open
+#include <sys/mman.h> // mmap, munmap
+#include <sys/stat.h> // fstat
+#include <unistd.h>   // close
+
+#define default_html_path "../../root/index4.html"
+
 
 extern char favicon[555];
 bool benchmark = false;
 
+//打开.html文件并将其作为body
+std::string read_file_to_string(const char* filename) {
+    // 打开文件
+    std::string err = "";
+    int fd = open(filename, O_RDONLY);
+    if (fd == -1) {
+        perror("打开文件失败");
+        return "";
+    }
+
+    // 获取文件大小
+    struct stat sb;
+    if (fstat(fd, &sb) == -1) {
+        perror("获取文件信息失败");
+        close(fd);
+        return "";
+    }
+
+    // 映射文件到内存
+    char* mapped = static_cast<char*>(mmap(nullptr, sb.st_size, PROT_READ, MAP_PRIVATE, fd, 0));
+    if (mapped == MAP_FAILED) {
+        perror("内存映射失败");
+        close(fd);
+        return "";
+    }
+
+    // 将映射的内容复制到 std::string
+    std::string content(mapped, sb.st_size);
+
+    // 解除映射
+    if (munmap(mapped, sb.st_size) == -1) {
+        perror("解除映射失败");
+    }
+
+    // 关闭文件
+    close(fd);
+
+    return content;
+}
+
+
+
 void onRequest(const HttpRequest& req, HttpResponse* resp)
 {
-    std::cout << "Headers " << req.methodString() << " " << req.path() << std::endl;
-    
+    std::cout << "Headers " << req.method()<<req.methodString() << " " << req.path() << std::endl;
+    std::string tempfilename;
     // 打印头部
     if (!benchmark)
     {
@@ -19,19 +68,22 @@ void onRequest(const HttpRequest& req, HttpResponse* resp)
         {
             std::cout << header.first << ": " << header.second << std::endl;
         }
+        for(const auto& it : req.bodyfrom()){
+            std::cout << "filename:" << it.first << " path:" <<it.second <<std::endl; 
+            tempfilename = "../../root/assets/predict2/" + it.first;
+        }
     }
-
+    std::cout<< "Path:" << req.path() << std::endl;
     if (req.path() == "/")
     {
         resp->setStatusCode(HttpResponse::k200Ok);
         resp->setStatusMessage("OK");
         resp->setContentType("text/html");
-        resp->addHeader("Server", "Muduo");
+        resp->addHeader("Server", "mytinymuduo");
         std::string now = Timestamp::now().toFormattedString();
-        resp->setBody("<html><head><title>This is title</title></head>"
-            "<body><h1>Hello</h1>Now is " + now +
-            "</body></html>");
+        resp->setBody(read_file_to_string(default_html_path));
     }
+
     else if (req.path() == "/favicon.ico")
     {
         resp->setStatusCode(HttpResponse::k200Ok);
@@ -39,13 +91,13 @@ void onRequest(const HttpRequest& req, HttpResponse* resp)
         resp->setContentType("image/png");
         resp->setBody(std::string(favicon, sizeof favicon));
     }
-    else if (req.path() == "/hello")
+    else if (req.path() == "/upload" )
     {
         resp->setStatusCode(HttpResponse::k200Ok);
         resp->setStatusMessage("OK");
-        resp->setContentType("text/plain");
-        resp->addHeader("Server", "Muduo");
-        resp->setBody("hello, world!\n");
+        resp->setContentType("image/jpg");
+        resp->addHeader("Server", "mytinymuduo");
+        resp->setBody(read_file_to_string(tempfilename.c_str()));
     }
     else
     {
@@ -53,13 +105,12 @@ void onRequest(const HttpRequest& req, HttpResponse* resp)
         resp->setStatusMessage("Not Found");
         resp->setCloseConnection(true);
     }
-
 }
 
 int main(int argc, char* argv[])
 {
     EventLoop loop;
-    HttpServer server(&loop, InetAddress(8080), "http-server");
+    HttpServer server(&loop, InetAddress(10000), "http-server");
     server.setHttpCallback(onRequest);
     server.start();
     loop.loop();

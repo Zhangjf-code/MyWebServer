@@ -1,5 +1,14 @@
 #include "HttpContext.h"
-#include "Buffer.h"
+#include <fstream>
+#include "Logger.h"
+
+#include "FormDataParser.h"
+
+#define save_pic_path "../../root/picture/"
+
+// 假设这个方法在 parseRequest 中被调用，且已经解析出了图片数据
+
+
 
 // 解析请求行
 bool HttpContext::processRequestLine(const char *begin, const char *end)
@@ -105,8 +114,8 @@ bool HttpContext::parseRequest(Buffer* buf, Timestamp receiveTime)
                 {
                     // empty line, end of header
                     // FIXME:
-                    state_ = kGotAll;
-                    hasMore = false;
+                    state_ = kExpectBody;
+                    // hasMore = false;
                 }
                 buf->retrieveUntil(crlf + 2);
             }
@@ -115,11 +124,90 @@ bool HttpContext::parseRequest(Buffer* buf, Timestamp receiveTime)
                 hasMore = false;
             }
         }
-        // 解析请求体，可以看到这里没有做出处理，只支持GET请求
+        // 在请求体解析部分调用此方法
         else if (state_ == kExpectBody)
         {
-            // FIXME:
+            // 解析请求体
+            //解析请求方法
+            std::cout << "A"<<request_.method() << std::endl;
+            if(request_.method() == HttpRequest::Method::kPost){
+                int contentLength = stoi(request_.getHeader("Content-Length"));
+                std::string contenttype = request_.getHeader("Content-Type");
+                std::cout<< "B"<< "   "<<contentLength<< "    " << buf->readableBytes()<< std::endl;
+            
+                if (contentLength > 0 ){
+                    if(contenttype.find("multipart/form-data") != -1)
+                    {
+                        //解析普通表单数据
+                        std::string pattern = "boundary=";
+                        int i = contenttype.find("; " + pattern, 0);
+                        i += pattern.size() + 2;
+                        std::string boundary = contenttype.substr(i);
+                        std::shared_ptr<std::string> sptr_data(new std::string(buf->retrieveAllAsString()));
+                        contentLength -= sptr_data->size();
+                        while(contentLength > 0){
+                            int *saveerrno;
+                            buf->readFd(buf->fd(), saveerrno);
+                            std::string line = buf->retrieveAsString(buf->readableBytes());
+                            sptr_data->append(line);
+                            contentLength -= line.size();
+                        }
+                        FormDataParser fdp(sptr_data, 0, "--" + boundary);
+                        auto p = fdp.parse();
+
+                        for (std::vector<FormItem>::iterator it = p->begin(); it != p->end(); ++it) {
+                            std::string filename = (*(it)).getFileName();
+                            if (filename != "") {  // 如果文件名不为空，那么说明是个文件，那么就存储为test.zip
+                                std::string content = (*(it)).getContent();
+                                saveImageToFile(content, save_pic_path+filename);
+                                if(request_.getBodyForm(filename) == "")
+                                    request_.addBodyForm(filename,save_pic_path+filename);
+                                else
+                                    LOG_INFO("文件已存在");
+                            } else {
+                                if(request_.getBodyForm((*(it)).getName()) == "")
+                                    request_.addBodyForm((*(it)).getName(),(*(it)).getContent());
+                                else
+                                    LOG_INFO("文件已存在");
+                            }
+
+                            // std::cout << (*(it)).getName() <<std::endl; //<< (*(it)).getContent() <<std::endl;
+                        }
+                        state_ = kGotAll;
+                        hasMore = false; // 请求处理完毕
+                    }else{
+                        std::cout<< "ContentType:"<< contenttype << std::endl;
+                        request_.setBody(std::move(buf->retrieveAsString(contentLength)));
+                        state_ = kGotAll;
+                        hasMore = false; // 请求处理完毕
+                    }
+                }else{
+                    LOG_ERROR("解析请求体失败");
+                    hasMore = false;
+                }
+            }else{
+                state_ = kGotAll;
+                hasMore = false;
+            }
         }
     }
     return ok;
 }
+
+
+
+void HttpContext::saveImageToFile(const std::string& data, const std::string& filename)
+{
+    std::ofstream outFile(filename, std::ios::binary);
+    if (outFile)
+    {
+        outFile.write(data.data(), data.size());
+        outFile.close();
+    }
+    else
+    {
+        // 处理文件打开失败的情况
+        std::cerr << "Failed to open file for writing: " << filename << std::endl;
+    }
+}
+

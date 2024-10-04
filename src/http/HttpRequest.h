@@ -1,9 +1,9 @@
-#ifndef HTTP_HTTPREQUEST_H
-#define HTTP_HTTPREQUEST_H
+#pragma once
 
 #include "noncopyable.h"
 #include "Timestamp.h"
 #include <unordered_map>
+
 
 class HttpRequest
 {
@@ -122,6 +122,12 @@ public:
         headers_[field] = value;
     }
 
+    void addBodyForm(const std::string &field, const std::string &value)
+    {
+        bodyform_[field] = value;
+    }
+
+
     // 获取请求头部的对应值
     std::string getHeader(const std::string &field) const
     {
@@ -134,10 +140,29 @@ public:
         return result;
     }
 
+
+    std::string getBodyForm(const std::string &field) const
+    {
+        std::string result;
+        auto it = bodyform_.find(field);
+        if (it != bodyform_.end())
+        {
+            result = it->second;
+        }
+        return result;
+    }
+
     const std::unordered_map<std::string, std::string>& headers() const
     {
         return headers_;
     }
+
+
+    const std::unordered_map<std::string, std::string>& bodyfrom() const
+    {
+        return bodyform_;
+    }
+
 
     void swap(HttpRequest &rhs)
     {
@@ -147,8 +172,19 @@ public:
         query_.swap(rhs.query_);
         std::swap(receiveTime_, rhs.receiveTime_);
         headers_.swap(rhs.headers_);
+        bodyform_.swap(rhs.bodyform_);
     }
 
+    void setBody(const std::string &body)
+    {
+        body_ = body;
+    }
+
+    const std::string& getbody() const
+    {
+        return body_;
+    }
+    
 private:
     Method method_;         // 请求方法
     Version version_;       // 协议版本号
@@ -156,6 +192,6 @@ private:
     std::string query_;     // 询问参数
     Timestamp receiveTime_; // 请求时间
     std::unordered_map<std::string, std::string> headers_; // 请求头部列表
+    std::unordered_map<std::string, std::string> bodyform_; // body 表单
+    std::string body_;
 };
-
-#endif // HTTP_HTTPREQUEST_H

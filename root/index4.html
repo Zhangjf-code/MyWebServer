@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyTinyNetworkLibrary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            flex-direction: column; /* 设置为列方向 */
+        }
+        #container {
+            display: flex;
+            width: 90vw;
+            max-width: 1200px; 
+            height: 80vh; 
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px; /* 为按钮提供空间 */
+        }
+        #fileSection {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-right: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+        #responseSection {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 200px;
+            display: none; 
+            margin-top: 20px; 
+            justify-content: center; 
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #statistics {
+            margin-top: 30px;
+            padding: 10px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="fileSection">
+            <input type="file" id="fileInput" accept="image/*">
+            <img id="imagePreview" alt="Image Preview">
+        </div>
+        <div id="responseSection">
+            <div id="responseText"></div>
+            <img id="responseImage" alt="Response Image" style="max-width: 100%; max-height: 200px; display: none;">
+        </div>
+    </div>
+    <button id="submitButton">提交</button>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const submitButton = document.getElementById('submitButton');
+        const responseText = document.getElementById('responseText');
+        const responseImage = document.getElementById('responseImage');
+
+        // 显示预览
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.src = event.target.result;
+                    imagePreview.style.display = 'block'; // 显示图片
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 提交图片
+        submitButton.addEventListener('click', function() {
+            const formData = new FormData();
+            const file = fileInput.files[0];
+            if (file) {
+                formData.append('image', file);
+                
+                fetch('/upload', { // 替换为您的后端处理URL
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.blob()) // 获取响应为Blob
+                .then(blob => {
+                    // 创建一个URL并显示图片
+                    const imageUrl = URL.createObjectURL(blob);
+                    responseImage.src = imageUrl; // 更新为Blob URL
+                    responseImage.style.display = 'block'; // 显示图片
+                    responseText.innerHTML = '<span style="color: green;">图片处理成功！</span>';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    responseText.innerHTML = '<span style="color: red;">上传失败，请重试。</span>';
+                });
+            } else {
+                alert('请先选择一张图片！');
+            }
+        });
+    </script>
+</body>
+</html>

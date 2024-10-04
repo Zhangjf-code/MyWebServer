@@ -1,9 +1,7 @@
-#ifndef HTTP_HTTPCONTEXT_H
-#define HTTP_HTTPCONTEXT_H
+#pragma once
 
 #include "HttpRequest.h"
-
-class Buffer;
+#include "Buffer.h"
 
 class HttpContext
 {
@@ -42,11 +40,12 @@ public:
 
     HttpRequest& request() { return request_; }
 
+
+    void saveImageToFile(const std::string& data, const std::string& filename);
+
 private:
     bool processRequestLine(const char *begin, const char *end);
 
     HttpRequestParseState state_;
     HttpRequest request_;
 };
-
-#endif // HTTP_HTTPCONTEXT_H
